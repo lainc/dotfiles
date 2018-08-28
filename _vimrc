@@ -1,4 +1,24 @@
 " Plugins ----------------------------------------- {{{
+execute pathogen#infect()
+" https://github.com/mileszs/ack.vim.git
+" https://github.com/w0rp/ale.git
+" https://github.com/tpope/vim-commentary.git
+" https://github.com/tpope/vim-repeat.git
+" https://github.com/vim-scripts/ScrollColors.git
+" https://github.com/tpope/vim-surround.git
+" https://github.com/tpope/vim-unimpaired.git
+" https://github.com/tpope/vim-abolish.git
+" https://github.com/tpope/vim-rsi.git
+" https://github.com/tpope/vim-sensible.git
+" https://github.com/terryma/vim-smooth-scroll.git
+" https://github.com/nelstrom/vim-visual-star-search.git
+
+set nocompatible
+syntax on
+filetype plugin indent on
+runtime macros/matchit.vim
+
+" https://github.com/junegunn/vim-plug
 call plug#begin('~\vimfiles\plugged')              "        Name
 Plug 'veloce/vim-aldmeris'                         " Aldmeris
 Plug 'rafi/awesome-vim-colorschemes'               " Awesome Color Schemes
@@ -32,26 +52,20 @@ Plug 'gosukiwi/vim-atom-dark'                      " Vim-Atom-Dark
 Plug 'tpope/vim-vividchalk'                        " Vividchalk
 Plug 'jnurmine/Zenburn'                            " Zenburn
 call plug#end()
-execute pathogen#infect()
 " Plug 'flazz/vim-colorschemes'                      " A Lot of Colorschemes
 " }}}
 " Basic Settings ----------------------------------- {{{
-syntax on
-filetype plugin indent on
-
-set pythonthreedll=python37.dll
-set hidden
-set confirm
-set hlsearch
-set incsearch
-set shiftwidth=2
-set softtabstop=2
 set wrap
+set history=200
+set pythonthreedll=python37.dll
+set hidden confirm
+set hlsearch incsearch
+set shiftwidth=4 softtabstop=4 expandtab
+setlocal shiftwidth=2 softtabstop=2 expandtab
+set splitbelow splitright
 set foldlevelstart=0
 let mapleader = " "
 let maplocalleader = "-"
-set splitbelow
-set splitright
 nnoremap j gj
 nnoremap k gk
 
@@ -82,8 +96,9 @@ inoremap <c-s> <Esc>:w<CR>i
 nnoremap <leader>w :w<CR>
 " inoremap jk <esc>
 " inoremap <esc> <nop>
-nnoremap <cr> :silent nohlsearch<cr>
+nnoremap <silent> <cr> :<C-u>nohlsearch<cr>
 nnoremap <leader>ev :vertical botright split $MYVIMRC<cr>
+nnoremap <leader>el :vertical botright split E:\wk\vimstuff\lvimtips.txt<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 nnoremap <leader>hm :call SurroundWithHeadingAndMarkers(input("Heading? "))<cr>
 nnoremap <leader>hc :let @*= '(>^.^<)'<cr>
@@ -120,23 +135,23 @@ function! SetRangeLines(n)
 endfunction
 " }}}
 " LVTHW mappings ----------------------------------- {{{
-nnoremap <leader>fc :call FoldColumnToggle()<cr>
-function! FoldColumnToggle()
-  " setlocal foldcolumn=(&foldcolumn?0:4)
-  if &foldcolumn
-    setlocal foldcolumn=0
-  else
-    setlocal foldcolumn=4
-  endif
-endfunction
-nnoremap <leader>g :silent execute "grep! -R " . shellescape(expand("<cWORD>")) . " ."<cr>:copen<cr>
-nnoremap <leader>d ddi<c-g>u<esc>dd
-nnoremap <leader>oa :execute "rightbelow vsplit " . bufname("#")<cr>
-nnoremap <leader>hh execute @*<cr>
-inorema <c-u> <esc>gUawi
-nnoremap <leader><c-u> gUaw
-vnoremap  <leader>" <esc>`<i"<esc>`>la"<esc> 
-onoremap in@ :<c-u>execute "normal! /[A-Za-z.]\\+@\\w\\+.[A-Za-z.]\\+\rgN"<cr>
+" nnoremap <leader>fc :call FoldColumnToggle()<cr>
+" function! FoldColumnToggle()
+"   " setlocal foldcolumn=(&foldcolumn?0:4)
+"   if &foldcolumn
+"     setlocal foldcolumn=0
+"   else
+"     setlocal foldcolumn=4
+"   endif
+" endfunction
+" nnoremap <leader>g :silent execute "grep! -R " . shellescape(expand("<cWORD>")) . " ."<cr>:copen<cr>
+" nnoremap <leader>d ddi<c-g>u<esc>dd
+" nnoremap <leader>oa :execute "rightbelow vsplit " . bufname("#")<cr>
+" nnoremap <leader>hh execute @*<cr>
+" inorema <c-u> <esc>gUawi
+" nnoremap <leader><c-u> gUaw
+" vnoremap  <leader>" <esc>`<i"<esc>`>la"<esc> 
+" onoremap in@ :<c-u>execute "normal! /[A-Za-z.]\\+@\\w\\+.[A-Za-z.]\\+\rgN"<cr>
 " }}}
 " Filetype autocomands ------------------------- {{{
 autocmd FileType javascript nnoremap <buffer> <localleader>c I//<esc>
@@ -148,13 +163,13 @@ augroup Markdown
   autocmd FileType markdown onoremap ah :<c-u>execute "normal! ?^==\\+$\r:nohlsearch\rg_vk0"<cr>
 augroup END
 " }}}
-" Vimscript file settings ---------------------- {{{
+" Vimscript file settings ------------------------- {{{
 augroup filetype_vim
   autocmd!
   autocmd FileType vim setlocal foldmethod=marker
 augroup END
 " }}}
-" Plugin: Ack.vim ---------------------------------- {{{
+" Plugin Ack.vim ---------------------------------- {{{
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif

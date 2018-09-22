@@ -1,4 +1,4 @@
-" Basic Settings ----------------------------------- {{{
+"Basic Settings ----------------------------------- {{{
 if &compatible
     set nocompatible
 endif
@@ -9,20 +9,24 @@ set wrap
 set history=200
 set pythonthreedll=python37.dll
 set hidden confirm
-set hlsearch incsearch
+set incsearch
+if !&hlsearch
+  set hlsearch
+endif
 set shiftwidth=4 softtabstop=4 expandtab
 setlocal shiftwidth=2 softtabstop=2 expandtab
 set splitbelow splitright
 set foldlevelstart=0
 let mapleader = " "
-let maplocalleader = "-"
+let maplocalleader = "\\"
 nnoremap j gj
 nnoremap k gk
 
+set background=dark
 if has("gui_running")
   colorscheme hybrid_material
 else
-  colorscheme darkblue
+  colorscheme hybrid_material
 endif
 
 " highlight ColorColumn ctermbg=235 guibg=#2c2d27
@@ -57,22 +61,26 @@ set statusline+=%L        " Total lines
 " }}}
 " Mappings ----------------------------------------- {{{
 " To save, ctrl-s.
-nnoremap <c-s> :w<CR>
-inoremap <c-s> <Esc>:w<CR>i
-nnoremap <leader>w :w<CR>
+nnoremap <C-s> :w<CR>
+inoremap <C-s> <esc>:w<CR>i
+nnoremap <silent> <leader>w :<C-u>w<CR>
+nnoremap Y y$
 " inoremap jk <esc>
 " inoremap <esc> <nop>
-nnoremap <silent> <cr> :<C-u>nohlsearch<cr>
-nnoremap <leader>ev :vertical botright split $MYVIMRC<cr>
-nnoremap <leader>el :vertical botright split E:\wk\vimstuff\lvimtips.txt<cr>
-nnoremap <leader>sv :source $MYVIMRC<cr>
-nnoremap <leader>hm :call SurroundWithHeadingAndMarkers(input("Heading? "))<cr>
-nnoremap <leader>hc :let @*= '(>^.^<)'<cr>
-nnoremap <leader>N :setlocal number!<cr>
-" for adding colorschemes to Plug
-nnoremap <leader>ff G/call plug#end()<cr>:let @a = "Plug '" . matchstr(@*, '\/\zs[^/]*\/[^/]*$') . "'"<cr>O<c-r>a<esc>:3,.:sort<cr>
-nnoremap <leader>fsp G/call plug#begin<cr>jV/call plug#end<cr>k:sort /[^"]*" /<cr>
+nnoremap <silent> <CR> :<C-u>nohlsearch<CR>
+nnoremap <leader>ev :vertical botright split $MYVIMRC<CR>
+nnoremap <leader>el :vertical botright split E:\wk\vimstuff\lvimtips.txt<CR>
+nnoremap <leader>sv :<C-u>source $MYVIMRC<CR>
+nnoremap <leader>hm :call SurroundWithHeadingAndMarkers(input("Heading? "))<CR>
+nnoremap <leader>hc :let @*= '(>^.^<)'<CR>
+nnoremap <leader>N :setlocal number!<CR>
 nnoremap <C-p> :<C-u>FZF<CR>
+" 1 less key for window navigation
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+nnoremap <leader>bd <Plug>Kwbd
 " function ComparePlugNames(p1, p2)
 "   let pat =  "'\\zs[^']*\\ze'"
 "   let p1 = split(matchstr(a:p1, pat), '/')[1]
@@ -121,8 +129,7 @@ endfunction
 " onoremap in@ :<c-u>execute "normal! /[A-Za-z.]\\+@\\w\\+.[A-Za-z.]\\+\rgN"<cr>
 " }}}
 " Filetype autocomands ------------------------- {{{
-autocmd FileType javascript nnoremap <buffer> <localleader>c I//<esc>
-autocmd FileType python     nnoremap <buffer> <localleader>c I#<esc>
+autocmd filetype lisp,scheme,art setlocal equalprg=scmindent.rkt
 
 augroup Markdown
   autocmd!
@@ -143,6 +150,11 @@ function! PackInit() abort
   call minpac#init()
   call minpac#add('k-takata/minpac', {'type': 'opt'})
   call minpac#add('mhinz/vim-grepper')
+  call minpac#add('vim-scripts/paredit.vim')
+  call minpac#add('sjl/tslime.vim')
+  call minpac#add('christoomey/vim-tmux-navigator')
+  call minpac#add('kana/vim-fakeclip') "clipboard on WSL
+  call minpac#add('amdt/vim-niji') "Rainbow parethesis
   " call minpac#add('weynhamz/vim-plugin-minibufexpl')
   " call minpac#add('janko-m/vim-test')
   " call minpac#add('sgur/vim-editorconfig')
@@ -164,6 +176,7 @@ function! PackInit() abort
   call minpac#add('tpope/vim-sensible')
   call minpac#add('terryma/vim-smooth-scroll')
   call minpac#add('nelstrom/vim-visual-star-search')
+  call minpac#add('haya14busa/incsearch.vim')
   " COLORS
   call minpac#add('veloce/vim-aldmeris')                         " Aldmeris
   call minpac#add('rafi/awesome-vim-colorschemes')               " Awesome Color Schemes
@@ -174,6 +187,7 @@ function! PackInit() abort
   call minpac#add('Lokaltog/vim-distinguished')                  " Distinguished
   call minpac#add('dracula/vim', {'name': 'dracula'})              " Dracula
   call minpac#add('morhetz/gruvbox')                             " Gruvbox
+  call minpac#add('noahfrederick/vim-hemisu')
   call minpac#add('kristijanhusak/vim-hybrid-material')          " Hybrid Material
   call minpac#add('ciaranm/inkpot')                              " Inkpot
   call minpac#add('nanotech/jellybeans.vim')                     " Jellybeans
@@ -209,16 +223,36 @@ nmap <silent> [W <Plug>(ale_first)
 nmap <silent> [w <Plug>(ale_previous)
 nmap <silent> ]w <Plug>(ale_next)
 nmap <silent> ]W <Plug>(ale_last)
+" incsearch
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
 "Grepper
 let g:grepper       = {}
 let g:grepper.tools = ['grep', 'git', 'rg']
-" Search for the current word
+  " Search for the current word
 nnoremap <Leader>* :Grepper -cword -noprompt<CR>
-" Search for the current selection
+  " Search for the current selection
 nmap gs <plug>(GrepperOperator)
 xmap gs <plug>(GrepperOperator)
 nnoremap <Leader>g :Grepper -tool rg<CR>
 nnoremap <Leader>G :Grepper -tool git<CR>
+" vim-niji
+let g:niji_dark_colours = [
+    \ [ '81', '#5fd7ff'],
+    \ [ '99', '#875fff'],
+    \ [ '1',  '#dc322f'],
+    \ [ '76', '#5fd700'],
+    \ [ '3',  '#b58900'],
+    \ [ '2',  '#859900'],
+    \ [ '6',  '#2aa198'],
+    \ [ '4',  '#268bd2'],
+    \ ]
+" tslime
+let g:tslime_ensure_trailing_newlines = 1
+let g:tslime_normal_mapping = '<localleader>t'
+let g:tslime_visual_mapping = '<localleader>t'
+let g:tslime_vars_mapping = '<localleader>T'
 
 command! PackUpdate call PackInit() | call minpac#update('', {'do': 'call minpac#status()'})
 command! PackClean  call PackInit() | call minpac#clean()

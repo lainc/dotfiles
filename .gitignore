@@ -55,5 +55,4 @@ tags
 # Persistent undo
 [._]*.un~
 
-vimfiles/bundle/
-vimfiles/plugged/
+vimfiles/

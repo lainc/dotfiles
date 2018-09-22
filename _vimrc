@@ -1,60 +1,10 @@
-" Plugins ----------------------------------------- {{{
-execute pathogen#infect()
-" https://github.com/mileszs/ack.vim.git
-" https://github.com/w0rp/ale.git
-" https://github.com/tpope/vim-commentary.git
-" https://github.com/tpope/vim-repeat.git
-" https://github.com/vim-scripts/ScrollColors.git
-" https://github.com/tpope/vim-surround.git
-" https://github.com/tpope/vim-unimpaired.git
-" https://github.com/tpope/vim-abolish.git
-" https://github.com/tpope/vim-rsi.git
-" https://github.com/tpope/vim-sensible.git
-" https://github.com/terryma/vim-smooth-scroll.git
-" https://github.com/nelstrom/vim-visual-star-search.git
-
-set nocompatible
-syntax on
-filetype plugin indent on
-runtime macros/matchit.vim
-
-" https://github.com/junegunn/vim-plug
-call plug#begin('~\vimfiles\plugged')              "        Name
-Plug 'veloce/vim-aldmeris'                         " Aldmeris
-Plug 'rafi/awesome-vim-colorschemes'               " Awesome Color Schemes
-Plug 'ayu-theme/ayu-vim'                           " Ayu
-Plug 'sjl/badwolf'                                 " Badwolf
-Plug 'chriskempson/base16-vim'                     " Base 16
-Plug 'Lokaltog/vim-distinguished'                  " Distinguished
-Plug 'dracula/vim', { 'as': 'dracula' }            " Dracula
-Plug 'morhetz/gruvbox'                             " Gruvbox
-Plug 'kristijanhusak/vim-hybrid-material'          " Hybrid Material
-Plug 'ciaranm/inkpot'                              " Inkpot
-Plug 'nanotech/jellybeans.vim'                     " Jellybeans
-Plug 'zeis/vim-kolor'                              " Kolor
-Plug 'jonathanfilip/vim-lucius'                    " Lucius
-Plug 'dikiaap/minimalist'                          " Minimalist
-Plug 'tomasr/molokai'                              " Molokai
-Plug 'sickill/vim-monokai'                         " Monokai
-Plug 'arcticicestudio/nord-vim'                    " Nord
-Plug 'mhartington/oceanic-next'                    " Oceanic
-Plug 'rakr/vim-one'                                " One
-Plug 'joshdick/onedark.vim'                        " Onedark
-Plug 'sonph/onehalf'                               " Onehalf Light
-Plug 'drewtempelmeyer/palenight.vim'               " Palenight
-Plug 'NLKNguyen/papercolor-theme'                  " Papercolor
-Plug 'jpo/vim-railscasts-theme'                    " Railscasts
-Plug 'junegunn/seoul256.vim'                       " Seoul256
-Plug 'hukl/Smyck-Color-Scheme'                     " Smyck
-Plug 'altercation/vim-colors-solarized'            " Solarized
-Plug 'jacoborus/tender.vim'                        " Tender
-Plug 'gosukiwi/vim-atom-dark'                      " Vim-Atom-Dark
-Plug 'tpope/vim-vividchalk'                        " Vividchalk
-Plug 'jnurmine/Zenburn'                            " Zenburn
-call plug#end()
-" Plug 'flazz/vim-colorschemes'                      " A Lot of Colorschemes
-" }}}
 " Basic Settings ----------------------------------- {{{
+if &compatible
+    set nocompatible
+endif
+syntax on
+" filetype plugin indent on
+runtime macros/matchit.vim
 set wrap
 set history=200
 set pythonthreedll=python37.dll
@@ -81,6 +31,22 @@ if exists('&colorcolumn')
 else
   match ColorColumn /\%>80v.\+/
 endif
+
+if &term =~ '256color'
+  " disable Background Color Erase (BCE) so that color schemes
+  " render properly when inside 256-color tmux and GNU screen.
+  " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+  set t_ut=
+endif
+
+set undofile
+if !has('nvim')
+  set undodir=~/.vim/undo
+endif
+augroup vimrc
+  autocmd!
+  autocmd BufWritePre /tmp/* setlocal noundofile 
+augroup END
 " }}}
 " Statusline --------------------------------------- {{{
 set statusline=%f         " Path to the file
@@ -106,6 +72,7 @@ nnoremap <leader>N :setlocal number!<cr>
 " for adding colorschemes to Plug
 nnoremap <leader>ff G/call plug#end()<cr>:let @a = "Plug '" . matchstr(@*, '\/\zs[^/]*\/[^/]*$') . "'"<cr>O<c-r>a<esc>:3,.:sort<cr>
 nnoremap <leader>fsp G/call plug#begin<cr>jV/call plug#end<cr>k:sort /[^"]*" /<cr>
+nnoremap <C-p> :<C-u>FZF<CR>
 " function ComparePlugNames(p1, p2)
 "   let pat =  "'\\zs[^']*\\ze'"
 "   let p1 = split(matchstr(a:p1, pat), '/')[1]
@@ -169,8 +136,91 @@ augroup filetype_vim
   autocmd FileType vim setlocal foldmethod=marker
 augroup END
 " }}}
-" Plugin Ack.vim ---------------------------------- {{{
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
+" Plugins ------------------------------------------ {{{
+function! PackInit() abort
+  packadd minpac
+
+  call minpac#init()
+  call minpac#add('k-takata/minpac', {'type': 'opt'})
+  call minpac#add('mhinz/vim-grepper')
+  " call minpac#add('weynhamz/vim-plugin-minibufexpl')
+  " call minpac#add('janko-m/vim-test')
+  " call minpac#add('sgur/vim-editorconfig')
+  " call minpac#add('tpope/vim-dispatch')
+  call minpac#add('junegunn/fzf')
+  call minpac#add('junegunn/fzf.vim')
+  call minpac#add('tpope/vim-obsession')
+  call minpac#add('tpope/vim-projectionist', {'type': 'opt'})
+  call minpac#add('xolox/vim-colorscheme-switcher', {'type': 'opt'})
+  call minpac#add('w0rp/ale')
+  call minpac#add('tpope/vim-commentary')
+  call minpac#add('tpope/vim-eunuch')
+  call minpac#add('tpope/vim-repeat')
+  call minpac#add('vim-scripts/ScrollColors')
+  call minpac#add('tpope/vim-surround')
+  call minpac#add('tpope/vim-unimpaired')
+  call minpac#add('tpope/vim-abolish')
+  call minpac#add('tpope/vim-rsi')
+  call minpac#add('tpope/vim-sensible')
+  call minpac#add('terryma/vim-smooth-scroll')
+  call minpac#add('nelstrom/vim-visual-star-search')
+  " COLORS
+  call minpac#add('veloce/vim-aldmeris')                         " Aldmeris
+  call minpac#add('rafi/awesome-vim-colorschemes')               " Awesome Color Schemes
+  
+  call minpac#add('ayu-theme/ayu-vim')                           " Ayu
+  call minpac#add('sjl/badwolf')                                 " Badwolf
+  call minpac#add('chriskempson/base16-vim')                     " Base 16
+  call minpac#add('Lokaltog/vim-distinguished')                  " Distinguished
+  call minpac#add('dracula/vim', {'name': 'dracula'})              " Dracula
+  call minpac#add('morhetz/gruvbox')                             " Gruvbox
+  call minpac#add('kristijanhusak/vim-hybrid-material')          " Hybrid Material
+  call minpac#add('ciaranm/inkpot')                              " Inkpot
+  call minpac#add('nanotech/jellybeans.vim')                     " Jellybeans
+  call minpac#add('zeis/vim-kolor')                              " Kolor
+  call minpac#add('jonathanfilip/vim-lucius')                    " Lucius
+  call minpac#add('dikiaap/minimalist')                          " Minimalist
+  call minpac#add('tomasr/molokai')                              " Molokai
+  call minpac#add('sickill/vim-monokai')                         " Monokai
+  call minpac#add('arcticicestudio/nord-vim')                    " Nord
+  call minpac#add('mhartington/oceanic-next')                    " Oceanic
+  call minpac#add('rakr/vim-one')                                " One
+  call minpac#add('joshdick/onedark.vim')                        " Onedark
+  call minpac#add('sonph/onehalf')                               " Onehalf Light
+  call minpac#add('drewtempelmeyer/palenight.vim')               " Palenight
+  call minpac#add('NLKNguyen/papercolor-theme')                  " Papercolor
+  call minpac#add('jpo/vim-railscasts-theme')                    " Railscasts
+  call minpac#add('junegunn/seoul256.vim')                       " Seoul256
+  call minpac#add('hukl/Smyck-Color-Scheme')                     " Smyck
+  call minpac#add('altercation/vim-colors-solarized')            " Solarized
+  call minpac#add('jacoborus/tender.vim')                        " Tender
+  call minpac#add('gosukiwi/vim-atom-dark')                      " Vim-Atom-Dark
+  call minpac#add('tpope/vim-vividchalk')                        " Vividchalk
+  call minpac#add('jnurmine/Zenburn')                            " Zenburn
+  "'flazz/vim-colorschemes' " A Lot of Colorscheme
+endfunction
+
+" Plugin configs 
+" Ale
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\ }
+nmap <silent> [W <Plug>(ale_first)
+nmap <silent> [w <Plug>(ale_previous)
+nmap <silent> ]w <Plug>(ale_next)
+nmap <silent> ]W <Plug>(ale_last)
+"Grepper
+let g:grepper       = {}
+let g:grepper.tools = ['grep', 'git', 'rg']
+" Search for the current word
+nnoremap <Leader>* :Grepper -cword -noprompt<CR>
+" Search for the current selection
+nmap gs <plug>(GrepperOperator)
+xmap gs <plug>(GrepperOperator)
+nnoremap <Leader>g :Grepper -tool rg<CR>
+nnoremap <Leader>G :Grepper -tool git<CR>
+
+command! PackUpdate call PackInit() | call minpac#update('', {'do': 'call minpac#status()'})
+command! PackClean  call PackInit() | call minpac#clean()
+command! PackStatus call PackInit() | call minpac#status()
 " }}}

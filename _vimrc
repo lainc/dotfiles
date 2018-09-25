@@ -22,11 +22,22 @@ let maplocalleader = "\\"
 nnoremap j gj
 nnoremap k gk
 
+"if (has("nvim"))
+"  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+"  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+"endif
+""For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+""Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+"" < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+"if (has("termguicolors"))
+"  set termguicolors
+"endif
+
 set background=dark
 if has("gui_running")
   colorscheme hybrid_material
 else
-  colorscheme hybrid_material
+  colorscheme onedark
 endif
 
 " highlight ColorColumn ctermbg=235 guibg=#2c2d27
@@ -136,8 +147,7 @@ augroup Markdown
   autocmd FileType markdown onoremap ih :<c-u>execute "normal! ?^==\\+$\r:nohlsearch\rkvg_"<cr>
   autocmd FileType markdown onoremap ah :<c-u>execute "normal! ?^==\\+$\r:nohlsearch\rg_vk0"<cr>
 augroup END
-" }}}
-" Vimscript file settings ------------------------- {{{
+
 augroup filetype_vim
   autocmd!
   autocmd FileType vim setlocal foldmethod=marker
@@ -174,20 +184,22 @@ function! PackInit() abort
   call minpac#add('tpope/vim-abolish')
   call minpac#add('tpope/vim-rsi')
   call minpac#add('tpope/vim-sensible')
+  call minpac#add('sheerun/vim-polyglot')
   call minpac#add('terryma/vim-smooth-scroll')
   call minpac#add('nelstrom/vim-visual-star-search')
   call minpac#add('haya14busa/incsearch.vim')
+  call minpac#add('sunaku/vim-shortcut')
   " COLORS
   call minpac#add('veloce/vim-aldmeris')                         " Aldmeris
   call minpac#add('rafi/awesome-vim-colorschemes')               " Awesome Color Schemes
-  
   call minpac#add('ayu-theme/ayu-vim')                           " Ayu
   call minpac#add('sjl/badwolf')                                 " Badwolf
   call minpac#add('chriskempson/base16-vim')                     " Base 16
+  call minpac#add('metalelf0/base16-black-metal-scheme')         " Base 16 black metal vased
   call minpac#add('Lokaltog/vim-distinguished')                  " Distinguished
-  call minpac#add('dracula/vim', {'name': 'dracula'})              " Dracula
+  call minpac#add('dracula/vim', {'name': 'dracula'})            " Dracula
   call minpac#add('morhetz/gruvbox')                             " Gruvbox
-  call minpac#add('noahfrederick/vim-hemisu')
+  call minpac#add('noahfrederick/vim-hemisu')                    " Hemisu
   call minpac#add('kristijanhusak/vim-hybrid-material')          " Hybrid Material
   call minpac#add('ciaranm/inkpot')                              " Inkpot
   call minpac#add('nanotech/jellybeans.vim')                     " Jellybeans
@@ -253,8 +265,122 @@ let g:tslime_ensure_trailing_newlines = 1
 let g:tslime_normal_mapping = '<localleader>t'
 let g:tslime_visual_mapping = '<localleader>t'
 let g:tslime_vars_mapping = '<localleader>T'
+let g:paredit_electric_return = 1
+" vim-shortcut
+Shortcut show shortcut menu and run chosen shortcut
+      \ noremap <silent> <Leader><Leader> :Shortcuts<Return>
+
+Shortcut fallback to shortcut menu on partial entry
+      \ noremap <silent> <Leader> :Shortcuts<Return>
+
 
 command! PackUpdate call PackInit() | call minpac#update('', {'do': 'call minpac#status()'})
 command! PackClean  call PackInit() | call minpac#clean()
 command! PackStatus call PackInit() | call minpac#status()
+" }}}
+" Shortcuts ---------------------------------------- {{{
+"-----------------------------------------------------------------------------
+" NEXT AND PREVIOUS                               *unimpaired-next*
+"-----------------------------------------------------------------------------
+
+Shortcut! [a       (unimpaired) go to previous argument
+Shortcut! ]a       (unimpaired) go to next     argument
+Shortcut! [A       (unimpaired) go to first    argument
+Shortcut! ]A       (unimpaired) go to last     argument
+Shortcut! [b       (unimpaired) go to previous buffer
+Shortcut! ]b       (unimpaired) go to next     buffer
+Shortcut! [B       (unimpaired) go to first    buffer
+Shortcut! ]B       (unimpaired) go to last     buffer
+Shortcut! [l       (unimpaired) go to previous location
+Shortcut! ]l       (unimpaired) go to next     location
+Shortcut! [L       (unimpaired) go to first    location
+Shortcut! ]L       (unimpaired) go to last     location
+Shortcut! [<C-L>   (unimpaired) go to previous file with locations
+Shortcut! ]<C-L>   (unimpaired) go to next     file with locations
+Shortcut! [q       (unimpaired) go to previous quickfix
+Shortcut! ]q       (unimpaired) go to next     quickfix
+Shortcut! [Q       (unimpaired) go to first    quickfix
+Shortcut! ]Q       (unimpaired) go to last     quickfix
+Shortcut! [<C-Q>   (unimpaired) go to previous file with quickfixes
+Shortcut! ]<C-Q>   (unimpaired) go to next     file with quickfixes
+Shortcut! [t       (unimpaired) go to previous ctag
+Shortcut! ]t       (unimpaired) go to next     ctag
+Shortcut! [T       (unimpaired) go to first    ctag
+Shortcut! ]T       (unimpaired) go to last     ctag
+
+Shortcut! [f       (unimpaired) go to previous file in current file's directory
+Shortcut! ]f       (unimpaired) go to next     file in current file's directory
+
+Shortcut! [n       (unimpaired) go to previous conflict marker or diff/patch hunk
+Shortcut! ]n       (unimpaired) go to next     conflict marker or diff/patch hunk
+
+"-----------------------------------------------------------------------------
+" LINE OPERATIONS                                 *unimpaired-lines*
+"-----------------------------------------------------------------------------
+
+Shortcut! [<Space> (unimpaired) Add [count] blank lines above the cursor.
+Shortcut! ]<Space> (unimpaired) Add [count] blank lines below the cursor.
+
+Shortcut! [e       (unimpaired) Exchange current line with [count] lines above it.
+Shortcut! ]e       (unimpaired) Exchange current line with [count] lines below it.
+
+"-----------------------------------------------------------------------------
+" OPTION TOGGLING                                 *unimpaired-toggling*
+"-----------------------------------------------------------------------------
+
+function! s:describe_option_shortcuts(key, description) abort
+  execute 'Shortcut! [o'. a:key .' (unimpaired) enable '.  a:description
+  execute 'Shortcut! ]o'. a:key .' (unimpaired) disable '. a:description
+  execute 'Shortcut! co'. a:key .' (unimpaired) toggle '.  a:description
+endfunction
+
+call s:describe_option_shortcuts('b', "assuming light background")
+call s:describe_option_shortcuts('c', "highlighting cursor's line")
+call s:describe_option_shortcuts('d', "diffing with current buffer")
+call s:describe_option_shortcuts('h', "highlighting search results")
+call s:describe_option_shortcuts('i', "ignoring case sensitivity")
+call s:describe_option_shortcuts('l', "listing nonprintable characters")
+call s:describe_option_shortcuts('n', "absolute line numbering")
+call s:describe_option_shortcuts('r', "relative line numbering")
+call s:describe_option_shortcuts('s', "checking for misspelled words")
+call s:describe_option_shortcuts('u', "highlighting cursor's column")
+call s:describe_option_shortcuts('v', "constraining cursor to line")
+call s:describe_option_shortcuts('w', "wrapping very long lines")
+call s:describe_option_shortcuts('x', "highlighting cursor's position")
+
+"-----------------------------------------------------------------------------
+" PASTING                                         *unimpaired-pasting*
+"-----------------------------------------------------------------------------
+
+Shortcut! >p       (unimpaired) Paste after  cursor, linewise, increasing indent.
+Shortcut! >P       (unimpaired) Paste before cursor, linewise, increasing indent.
+Shortcut! <p       (unimpaired) Paste after  cursor, linewise, decreasing indent.
+Shortcut! <P       (unimpaired) Paste before cursor, linewise, decreasing indent.
+Shortcut! =p       (unimpaired) Paste after  cursor, linewise, reindenting.
+Shortcut! =P       (unimpaired) Paste before cursor, linewise, reindenting.
+
+Shortcut! [p       (unimpaired) Paste after  cursor, linewise.
+Shortcut! ]p       (unimpaired) Paste before cursor, linewise.
+
+Shortcut! yo       (unimpaired) Paste after  cursor, linewise, using set 'paste'.
+Shortcut! yO       (unimpaired) Paste before cursor, linewise, using set 'paste'.
+
+"-----------------------------------------------------------------------------
+" ENCODING AND DECODING                           *unimpaired-encoding*
+"-----------------------------------------------------------------------------
+
+Shortcut! [x       (unimpaired) XML escape.
+Shortcut! ]x       (unimpaired) XML unescape.
+Shortcut! [xx      (unimpaired) XML escape current line.
+Shortcut! ]xx      (unimpaired) XML unescape current line.
+
+Shortcut! [u       (unimpaired) URL escape.
+Shortcut! ]u       (unimpaired) URL unescape.
+Shortcut! [uu      (unimpaired) URL escape current line.
+Shortcut! ]uu      (unimpaired) URL unescape current line.
+
+Shortcut! [y       (unimpaired) String escape.
+Shortcut! ]y       (unimpaired) String unescape.
+Shortcut! [yy      (unimpaired) String escape current line.
+Shortcut! ]yy (unimpaired) String unescape current line.
 " }}}

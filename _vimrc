@@ -91,7 +91,9 @@ nnoremap <silent> <CR> :<C-u>nohlsearch<CR>
 nnoremap <leader>ev :vertical botright split $MYVIMRC<CR>
 nnoremap <leader>el :vertical botright split E:\wk\vimstuff\lvimtips.txt<CR>
 nnoremap <leader>sv :<C-u>source $MYVIMRC<CR>
-nnoremap <F9> :w<CR> :!gcc % -o %<.x -Wall -Wextra 2>errors.err; cat errors.err<CR>
+nnoremap <F5> :<C-u>call CompileAndExecute()<CR>
+nnoremap <F9> :SCCompile<cr>
+nnoremap <F10> :SCCompileRun<cr>
 nnoremap <leader>hm :call SurroundWithHeadingAndMarkers(input("Heading? "))<CR>
 nnoremap <leader>hc :let @*= '(>^.^<)'<CR>
 nnoremap <leader>N :setlocal number!<CR>
@@ -120,6 +122,30 @@ function! SurroundWithHeadingAndMarkers(heading) range
   call append(last, '" }'.'}}')
   let dashes = repeat('-', 49 - strlen(a:heading))
   call append(first - 1, '" ' . a:heading . ' ' . dashes . ' {'.'{{')
+endfunction
+
+function! Preserve(command)
+  " Preparation: save window state
+  let l:saved_winview = winsaveview()
+  " Run the command:
+  execute a:command
+  " Clean up: restore previous window position
+  call winrestview(l:saved_winview)
+endfunction
+
+function! CompileAndExecute()
+  echo @%
+  let fdir = expand("%:p:h")
+  let fname = expand("%:t")
+  let tname = expand("%:t:r") . ".exe"
+  let bufs = term_list()
+  let buf = empty(bufs) ? term_start("cmd", {"term_rows":10}) : bufs[0]
+  call term_sendkeys(buf, "cd " . fdir . "\<CR>")
+  let sendexpr = "gcc " . fname . " -o " . tname .
+        \ " -Wall -Wextra 2>errors.err && " .
+        \ tname . "\<CR>"
+  call term_sendkeys(buf, sendexpr)
+  execute bufwinnr(buf) 'wincmd w'
 endfunction
 
 function! SetRangeLines(n)
@@ -174,6 +200,7 @@ function! PackInit() abort
   call minpac#add('vim-scripts/paredit.vim')
   call minpac#add('jpalardy/vim-slime')
   call minpac#add('wlangstroth/vim-racket')
+  call minpac#add('xuhdev/SingleCompile')
   call minpac#add('gokcehan/vim-opex') " Opex is a simple plugin that defines two custom operators to execute text objects
   " call minpac#add('sjl/tslime.vim')
   " call minpac#add('christoomey/vim-tmux-navigator')

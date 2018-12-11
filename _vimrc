@@ -2,6 +2,8 @@
 if &compatible
     set nocompatible
 endif
+set exrc
+set secure
 syntax on
 " filetype plugin indent on
 runtime macros/matchit.vim
@@ -13,6 +15,7 @@ set incsearch
 if !&hlsearch
   set hlsearch
 endif
+" set sw=4 ts=4 sts=4 noet
 set shiftwidth=4 softtabstop=4 expandtab
 setlocal shiftwidth=2 softtabstop=2 expandtab
 set splitbelow splitright
@@ -22,6 +25,10 @@ let maplocalleader = "\\"
 nnoremap j gj
 nnoremap k gk
 
+set guioptions-=m  "menu bar
+set guioptions-=T  "toolbar
+set guioptions-=r  "scrollbar
+
 "if (has("nvim"))
 "  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
 "  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
@@ -29,11 +36,13 @@ nnoremap k gk
 ""For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 ""Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
 "" < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
-"if (has("termguicolors"))
-"  set termguicolors
-"endif
-
+if (has("termguicolors"))
+  set termguicolors
+endif
 set background=dark
+set t_Co=256
+set cursorline
+
 if has("gui_running")
   colorscheme hybrid_material
 else
@@ -82,6 +91,7 @@ nnoremap <silent> <CR> :<C-u>nohlsearch<CR>
 nnoremap <leader>ev :vertical botright split $MYVIMRC<CR>
 nnoremap <leader>el :vertical botright split E:\wk\vimstuff\lvimtips.txt<CR>
 nnoremap <leader>sv :<C-u>source $MYVIMRC<CR>
+nnoremap <F9> :w<CR> :!gcc % -o %<.x -Wall -Wextra 2>errors.err; cat errors.err<CR>
 nnoremap <leader>hm :call SurroundWithHeadingAndMarkers(input("Heading? "))<CR>
 nnoremap <leader>hc :let @*= '(>^.^<)'<CR>
 nnoremap <leader>N :setlocal number!<CR>
@@ -140,7 +150,7 @@ endfunction
 " onoremap in@ :<c-u>execute "normal! /[A-Za-z.]\\+@\\w\\+.[A-Za-z.]\\+\rgN"<cr>
 " }}}
 " Filetype autocomands ------------------------- {{{
-autocmd filetype lisp,scheme,art setlocal equalprg=scmindent.rkt
+" autocmd filetype lisp,scheme,art setlocal equalprg=scmindent.rkt
 
 augroup Markdown
   autocmd!
@@ -160,10 +170,14 @@ function! PackInit() abort
   call minpac#init()
   call minpac#add('k-takata/minpac', {'type': 'opt'})
   call minpac#add('mhinz/vim-grepper')
+  call minpac#add('marijnh/tern_for_vim')
   call minpac#add('vim-scripts/paredit.vim')
-  call minpac#add('sjl/tslime.vim')
-  call minpac#add('christoomey/vim-tmux-navigator')
-  call minpac#add('kana/vim-fakeclip') "clipboard on WSL
+  call minpac#add('jpalardy/vim-slime')
+  call minpac#add('wlangstroth/vim-racket')
+  call minpac#add('gokcehan/vim-opex') " Opex is a simple plugin that defines two custom operators to execute text objects
+  " call minpac#add('sjl/tslime.vim')
+  " call minpac#add('christoomey/vim-tmux-navigator')
+  " call minpac#add('kana/vim-fakeclip') "clipboard on WSL
   call minpac#add('amdt/vim-niji') "Rainbow parethesis
   " call minpac#add('weynhamz/vim-plugin-minibufexpl')
   " call minpac#add('janko-m/vim-test')
@@ -191,13 +205,18 @@ function! PackInit() abort
   call minpac#add('sunaku/vim-shortcut')
   " COLORS
   call minpac#add('veloce/vim-aldmeris')                         " Aldmeris
+  call minpac#add('Badacadabra/vim-archery')                     " Archery
   call minpac#add('rafi/awesome-vim-colorschemes')               " Awesome Color Schemes
   call minpac#add('ayu-theme/ayu-vim')                           " Ayu
   call minpac#add('sjl/badwolf')                                 " Badwolf
+  call minpac#add('atelierbram/Base2Tone-vim')                   " Base 2 Tone
   call minpac#add('chriskempson/base16-vim')                     " Base 16
   call minpac#add('metalelf0/base16-black-metal-scheme')         " Base 16 black metal vased
+  call minpac#add('xero/blaquemagick.vim')                       " Blaquemagick
+  call minpac#add('hauleth/blame.vim')                           " Blame
   call minpac#add('Lokaltog/vim-distinguished')                  " Distinguished
   call minpac#add('dracula/vim', {'name': 'dracula'})            " Dracula
+  call minpac#add('clinstid/eink.vim')                           " Eink
   call minpac#add('morhetz/gruvbox')                             " Gruvbox
   call minpac#add('noahfrederick/vim-hemisu')                    " Hemisu
   call minpac#add('kristijanhusak/vim-hybrid-material')          " Hybrid Material
@@ -207,14 +226,17 @@ function! PackInit() abort
   call minpac#add('jonathanfilip/vim-lucius')                    " Lucius
   call minpac#add('dikiaap/minimalist')                          " Minimalist
   call minpac#add('tomasr/molokai')                              " Molokai
+  call minpac#add('fxn/vim-monochrome')                          " Monochrome
   call minpac#add('sickill/vim-monokai')                         " Monokai
+  call minpac#add('robertmeta/nofrils')                          " No frills
   call minpac#add('arcticicestudio/nord-vim')                    " Nord
   call minpac#add('mhartington/oceanic-next')                    " Oceanic
   call minpac#add('rakr/vim-one')                                " One
   call minpac#add('joshdick/onedark.vim')                        " Onedark
-  call minpac#add('sonph/onehalf')                               " Onehalf Light
+  " call minpac#add('sonph/onehalf')                               " Onehalf Light
   call minpac#add('drewtempelmeyer/palenight.vim')               " Palenight
   call minpac#add('NLKNguyen/papercolor-theme')                  " Papercolor
+  call minpac#add('owickstrom/vim-colors-paramount')             " Paramount
   call minpac#add('jpo/vim-railscasts-theme')                    " Railscasts
   call minpac#add('junegunn/seoul256.vim')                       " Seoul256
   call minpac#add('hukl/Smyck-Color-Scheme')                     " Smyck
@@ -222,61 +244,10 @@ function! PackInit() abort
   call minpac#add('jacoborus/tender.vim')                        " Tender
   call minpac#add('gosukiwi/vim-atom-dark')                      " Vim-Atom-Dark
   call minpac#add('tpope/vim-vividchalk')                        " Vividchalk
+  call minpac#add('zaki/zazen')                                  " Zazen
   call minpac#add('jnurmine/Zenburn')                            " Zenburn
   "'flazz/vim-colorschemes' " A Lot of Colorscheme
 endfunction
-
-" Plugin configs 
-" Ale
-let g:ale_linters = {
-\   'javascript': ['eslint'],
-\ }
-nmap <silent> [W <Plug>(ale_first)
-nmap <silent> [w <Plug>(ale_previous)
-nmap <silent> ]w <Plug>(ale_next)
-nmap <silent> ]W <Plug>(ale_last)
-" incsearch
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-"Grepper
-let g:grepper       = {}
-let g:grepper.tools = ['grep', 'git', 'rg']
-  " Search for the current word
-nnoremap <Leader>* :Grepper -cword -noprompt<CR>
-  " Search for the current selection
-nmap gs <plug>(GrepperOperator)
-xmap gs <plug>(GrepperOperator)
-nnoremap <Leader>g :Grepper -tool rg<CR>
-nnoremap <Leader>G :Grepper -tool git<CR>
-" vim-niji
-let g:niji_dark_colours = [
-    \ [ '81', '#5fd7ff'],
-    \ [ '99', '#875fff'],
-    \ [ '1',  '#dc322f'],
-    \ [ '76', '#5fd700'],
-    \ [ '3',  '#b58900'],
-    \ [ '2',  '#859900'],
-    \ [ '6',  '#2aa198'],
-    \ [ '4',  '#268bd2'],
-    \ ]
-" tslime
-let g:tslime_ensure_trailing_newlines = 1
-let g:tslime_normal_mapping = '<localleader>t'
-let g:tslime_visual_mapping = '<localleader>t'
-let g:tslime_vars_mapping = '<localleader>T'
-let g:paredit_electric_return = 1
-" vim-shortcut
-Shortcut show shortcut menu and run chosen shortcut
-      \ noremap <silent> <Leader><Leader> :Shortcuts<Return>
-
-Shortcut fallback to shortcut menu on partial entry
-      \ noremap <silent> <Leader> :Shortcuts<Return>
-
-
-command! PackUpdate call PackInit() | call minpac#update('', {'do': 'call minpac#status()'})
-command! PackClean  call PackInit() | call minpac#clean()
-command! PackStatus call PackInit() | call minpac#status()
 " }}}
 " Shortcuts ---------------------------------------- {{{
 "-----------------------------------------------------------------------------
@@ -383,4 +354,63 @@ Shortcut! [y       (unimpaired) String escape.
 Shortcut! ]y       (unimpaired) String unescape.
 Shortcut! [yy      (unimpaired) String escape current line.
 Shortcut! ]yy (unimpaired) String unescape current line.
+" }}}
+" Plugin configs ----------------------------------- {{{
+" Ale
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\ }
+nmap <silent> [W <Plug>(ale_first)
+nmap <silent> [w <Plug>(ale_previous)
+nmap <silent> ]w <Plug>(ale_next)
+nmap <silent> ]W <Plug>(ale_last)
+" incsearch
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+"Grepper
+let g:grepper       = {}
+let g:grepper.tools = ['grep', 'git', 'rg']
+  " Search for the current word
+nnoremap <Leader>* :Grepper -cword -noprompt<CR>
+  " Search for the current selection
+nmap gs <plug>(GrepperOperator)
+xmap gs <plug>(GrepperOperator)
+nnoremap <Leader>g :Grepper -tool rg<CR>
+nnoremap <Leader>G :Grepper -tool git<CR>
+" vim-niji
+" let g:niji_dark_colours = [
+"     \ [ '81', '#5fd7ff'],
+"     \ [ '99', '#875fff'],
+"     \ [ '1',  '#dc322f'],
+"     \ [ '76', '#5fd700'],
+"     \ [ '3',  '#b58900'],
+"     \ [ '2',  '#859900'],
+"     \ [ '6',  '#2aa198'],
+"     \ [ '4',  '#268bd2'],
+"     \ ]
+" Tslime
+" let g:tslime_ensure_trailing_newlines = 1
+" let g:tslime_normal_mapping = '<localleader>t'
+" let g:tslime_visual_mapping = '<localleader>t'
+" let g:tslime_vars_mapping = '<localleader>T'
+" paredit
+let g:paredit_electric_return = 0
+" Slime
+let g:slime_target = "vimterminal"
+let g:slime_no_mappings = 1
+xmap <localleader>r <Plug>SlimeRegionSend
+nmap <localleader>r <Plug>SlimeParagraphSend
+" nmap <leader>ss <Plug>SlimeLineSend
+" Vim-shortcut
+Shortcut show shortcut menu and run chosen shortcut
+      \ noremap <silent> <Leader><Leader> :Shortcuts<Return>
+
+Shortcut fallback to shortcut menu on partial entry
+      \ noremap <silent> <Leader> :Shortcuts<Return>
+
+
+command! PackUpdate call PackInit() | call minpac#update('', {'do': 'call minpac#status()'})
+command! PackClean  call PackInit() | call minpac#clean()
+command! PackStatus call PackInit() | call minpac#status()
 " }}}

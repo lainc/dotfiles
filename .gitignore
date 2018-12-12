@@ -55,4 +55,4 @@ tags
 # Persistent undo
 [._]*.un~
 
-vimfiles/
+vimfiles/pack/minpac
